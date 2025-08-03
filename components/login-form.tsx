@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,9 +12,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { loginUser } from "@/services/authServices"; // Import your login function
-import { validateLogin } from "@/helpers/authHelpers"; // Import your validation
-import {useRouter} from "next/navigation";
+import { loginUser } from "@/services/authServices";
+import { validateLogin } from "@/helpers/authHelpers";
+import { useRouter } from "next/navigation";
+import useAuthStore from "@/stores/useAuthStore"; // ✅ import the store
 
 export function LoginForm({
   className,
@@ -30,7 +32,6 @@ export function LoginForm({
     e.preventDefault();
     setError(null);
 
-    // Validate form
     const validationError = validateLogin({ email, password });
     if (validationError) {
       setError(validationError);
@@ -40,21 +41,30 @@ export function LoginForm({
     setIsLoading(true);
 
     try {
-  const response = await loginUser({ email, password });
-  console.log("Login successful:", response);
+      const response = await loginUser({ email, password });
+      console.log("Login successful:", response);
 
-  // Save token to localStorage (adjust key as needed)
-  localStorage.setItem("token", response.access_token);
+      // Adjust token extraction based on actual API shape
+      const token =
+        response.access_token ||
+        response.data?.access_token ||
+        response.token ||
+        null;
 
-  router.push("/dashboard");
-} catch (err: any) {
+      if (!token) {
+        throw new Error("No token returned from backend");
+      }
+
+      // ✅ Save token using the store (this also updates localStorage)
+      useAuthStore.getState().setToken(token);
+
+      router.push("/dashboard");
+    } catch (err: any) {
       console.error("Login failed:", err);
-
       const backendMessage =
-        err.response?.data?.message || // most common
-        err.response?.data?.detail || // FastAPI style
+        err.response?.data?.message ||
+        err.response?.data?.detail ||
         "Login failed. Please try again.";
-
       setError(backendMessage);
     } finally {
       setIsLoading(false);

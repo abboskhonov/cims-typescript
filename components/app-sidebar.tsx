@@ -8,7 +8,6 @@ import {
   IconCreditCard,
   IconBrandWordpress,
 } from "@tabler/icons-react"
-
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
 import {
@@ -20,43 +19,33 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import useAuthStore from "@/stores/useAuthStore"
 
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "#",
-      icon: IconDashboard,
-    },
-    {
-      title: "Sales",
-      url: "#",
-      icon: IconChartBar,
-    },
-    {
-      title: "Finance",
-      url: "#",
-      icon: IconReport,
-    },
-    {
-      title: "Payment",
-      url: "#",
-      icon: IconCreditCard,
-    },
-    {
-      title: "WordPress",
-      url: "#",
-      icon: IconBrandWordpress,
-    },
-  ],
-}
+const navMain = [
+  { title: "Dashboard", url: "/dashboard", icon: IconDashboard },
+  { title: "Sales", url: "/sales", icon: IconChartBar },
+  { title: "Finance", url: "/finance", icon: IconReport },
+  { title: "Payment", url: "/payment", icon: IconCreditCard },
+  { title: "WordPress", url: "/wordpress", icon: IconBrandWordpress },
+]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const user = useAuthStore((s) => s.user)
+  const loading = useAuthStore((s) => s.loading)
+  const fetchUser = useAuthStore.getState().fetchUser // stable reference
+
+  React.useEffect(() => {
+    if (!user && !loading) {
+      fetchUser()
+    }
+  }, [user, loading]) // no fetchUser in deps because it's stable
+
+  const displayUser = {
+    name: user ? `${user.name} ${user.surname}` : "Loading...",
+    email: user?.email ?? "",
+    avatar: "/avatars/default.jpg",
+  }
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -73,11 +62,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={navMain} />
       </SidebarContent>
+
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={displayUser} />
       </SidebarFooter>
     </Sidebar>
   )
