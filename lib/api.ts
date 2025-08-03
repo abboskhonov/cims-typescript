@@ -13,7 +13,8 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   const token = getAuthToken();
-  if (token && config.headers) {
+  if (token) {
+    config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
@@ -54,6 +55,7 @@ api.interceptors.response.use(
         return original ? api(original) : Promise.reject(err);
       } catch (_) {
         useAuthStore.getState().logout();
+        // optionally: redirect to login here
       }
     }
     return Promise.reject(err);
