@@ -16,6 +16,9 @@ interface DashboardState {
   error: string | null
   lastFetched: number | null
   fetchDashboard: (force?: boolean) => Promise<void>
+  updateUserInStore: (userId: string, updatedData: any) => void
+  updateUserOptimistically: (userId: string, updatedData: any) => void
+  recalculateStatistics: () => void
   reset: () => void
 }
 
@@ -45,9 +48,11 @@ const useDashboardStore = create<DashboardState>((set, get) => ({
     }
 
     set({ loading: true, error: null })
+
     try {
       const res = await api.get("/ceo/dashboard")
       const data = res.data
+
       set({
         statistics: {
           user_count: data.statistics?.user_count ?? 0,
@@ -68,6 +73,53 @@ const useDashboardStore = create<DashboardState>((set, get) => ({
     } finally {
       set({ loading: false })
     }
+  },
+
+  // Update user in store and recalculate statistics (THIS IS THE MAIN METHOD)
+  updateUserInStore: (userId: string, updatedData: any) => {
+    set((state) => {
+      const updatedUsers = state.users.map(user =>
+        user.id === userId ? { ...user, ...updatedData } : user
+      )
+
+      // Recalculate statistics based on updated users
+      const activeUsers = updatedUsers.filter(user => user.is_active).length
+      const inactiveUsers = updatedUsers.filter(user => !user.is_active).length
+
+      return {
+        users: updatedUsers,
+        statistics: {
+          ...state.statistics,
+          user_count: updatedUsers.length,
+          active_user_count: activeUsers,
+          inactive_user_count: inactiveUsers,
+        }
+      }
+    })
+  },
+
+  // Optimistic update (alias for updateUserInStore)
+  updateUserOptimistically: (userId: string, updatedData: any) => {
+    const { updateUserInStore } = get()
+    updateUserInStore(userId, updatedData)
+  },
+
+  // Manual statistics recalculation
+  recalculateStatistics: () => {
+    set((state) => {
+      const users = state.users
+      const activeUsers = users.filter(user => user.is_active).length
+      const inactiveUsers = users.filter(user => !user.is_active).length
+
+      return {
+        statistics: {
+          ...state.statistics,
+          user_count: users.length,
+          active_user_count: activeUsers,
+          inactive_user_count: inactiveUsers,
+        }
+      }
+    })
   },
 
   reset: () => {
