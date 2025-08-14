@@ -40,7 +40,12 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "./ui/input";
 import { toast } from "sonner";
-import { updateUser, deleteUser, addUser, CreateUserPayload } from "@/services/userServices";
+import {
+  updateUser,
+  deleteUser,
+  addUser,
+  CreateUserPayload,
+} from "@/services/userServices";
 
 export function UsersTable() {
   const users = useDashboardStore((s) => s.users);
@@ -53,7 +58,9 @@ export function UsersTable() {
 
   const [selectedUser, setSelectedUser] = React.useState<any>(null);
   const [open, setOpen] = React.useState(false);
-  const [dialogMode, setDialogMode] = React.useState<"edit" | "delete" | "add">("edit");
+  const [dialogMode, setDialogMode] = React.useState<"edit" | "delete" | "add">(
+    "edit"
+  );
 
   React.useEffect(() => {
     fetchDashboard();
@@ -103,7 +110,7 @@ export function UsersTable() {
   const handleAddUserSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isSaving) return;
-    
+
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const payload: CreateUserPayload = {
       email: (formData.get("email") as string) || "",
@@ -113,7 +120,7 @@ export function UsersTable() {
       role: (formData.get("role") as string) || "",
       company_code: (formData.get("company_code") as string) || undefined,
       telegram_id: (formData.get("telegram_id") as string) || undefined,
-      default_salary: formData.get("default_salary") 
+      default_salary: formData.get("default_salary")
         ? Number(formData.get("default_salary"))
         : undefined,
       is_active: formData.get("is_active") === "true",
@@ -172,11 +179,13 @@ export function UsersTable() {
   return (
     <div className="mx-4 my-6">
       <Toaster richColors position="top-right" />
-      
+
       {/* Add User Button */}
       <div className="mb-4 flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">Users Management</h2>
+          <h2 className="text-xl font-semibold text-foreground">
+            Users Management
+          </h2>
           <p className="text-sm text-muted-foreground">
             Manage users, roles, and permissions
           </p>
@@ -383,7 +392,9 @@ export function UsersTable() {
                   >
                     <option value="">Select a role</option>
                     <option value="CEO">CEO</option>
-                    <option value="Financial Director">Financial Director</option>
+                    <option value="Financial Director">
+                      Financial Director
+                    </option>
                     <option value="Member">Member</option>
                     <option value="Customer">Customer</option>
                   </select>
@@ -398,7 +409,12 @@ export function UsersTable() {
                 </div>
                 <div className="space-y-1">
                   <Label>Default Salary</Label>
-                  <Input name="default_salary" type="number" min="0" step="0.01" />
+                  <Input
+                    name="default_salary"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                  />
                 </div>
                 <div className="space-y-1">
                   <Label>Status *</Label>
@@ -453,8 +469,7 @@ export function UsersTable() {
                     email: (formData.get("email") as string) || "",
                     name: (formData.get("name") as string) || "",
                     surname: (formData.get("surname") as string) || "",
-                    password:
-                      (formData.get("password") as string) || undefined,
+                    password: (formData.get("password") as string) || undefined,
                     company_code:
                       (formData.get("company_code") as string) || undefined,
                     telegram_id:
@@ -536,7 +551,9 @@ export function UsersTable() {
                   >
                     <option value="">Select a role</option>
                     <option value="CEO">CEO</option>
-                    <option value="Financial Director">Financial Director</option>
+                    <option value="Financial Director">
+                      Financial Director
+                    </option>
                     <option value="Member">Member</option>
                     <option value="Customer">Customer</option>
                   </select>
