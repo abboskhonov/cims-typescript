@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -29,6 +30,7 @@ import {
   Trash,
   Loader2,
   Plus,
+  Shield,
 } from "lucide-react";
 import useDashboardStore from "@/stores/useAdminStats";
 import {
@@ -46,6 +48,13 @@ import {
   addUser,
   CreateUserPayload,
 } from "@/services/userServices";
+import { usePermissions } from "@/hooks/usePermissions";
+
+type Permission = {
+  id: string;
+  name: string;
+  granted: boolean;
+};
 
 export function UsersTable() {
   const users = useDashboardStore((s) => s.users);
@@ -58,13 +67,30 @@ export function UsersTable() {
 
   const [selectedUser, setSelectedUser] = React.useState<any>(null);
   const [open, setOpen] = React.useState(false);
-  const [dialogMode, setDialogMode] = React.useState<"edit" | "delete" | "add">(
-    "edit"
-  );
+  const [dialogMode, setDialogMode] = React.useState<
+    "edit" | "delete" | "add" | "permissions"
+  >("edit");
+
+  // Permissions state
+  const [permissionsData, setPermissionsData] = React.useState<{[key: string]: boolean}>({});
+  const {
+    data: permissions,
+    isLoading: permissionsLoading,
+    error: permissionsError,
+    updatePermissions,
+    isUpdating,
+  } = usePermissions(selectedUser?.id);
 
   React.useEffect(() => {
     fetchDashboard();
   }, [fetchDashboard]);
+
+  // Update local permissions state when data changes
+  React.useEffect(() => {
+    if (permissions?.permissions) {
+      setPermissionsData(permissions.permissions);
+    }
+  }, [permissions]);
 
   const getInitials = (name: string, surname: string) => {
     return `${name?.charAt(0) || ""}${surname?.charAt(0) || ""}`.toUpperCase();
@@ -86,6 +112,31 @@ export function UsersTable() {
     setSelectedUser(user);
     setDialogMode("delete");
     setOpen(true);
+  };
+
+  const handleManagePermissions = (user: any) => {
+    setSelectedUser(user);
+    setDialogMode("permissions");
+    setOpen(true);
+  };
+
+  const handlePermissionToggle = (permissionKey: string) => {
+    setPermissionsData((prev) => ({
+      ...prev,
+      [permissionKey]: !prev[permissionKey]
+    }));
+  };
+
+  const handleSavePermissions = async () => {
+    try {
+      await updatePermissions(permissionsData);
+      toast.success("Permissions updated successfully");
+      setOpen(false);
+    } catch (err: any) {
+      toast.error(
+        err?.response?.data?.message || "Failed to update permissions"
+      );
+    }
   };
 
   const handleConfirmDelete = async () => {
@@ -335,11 +386,13 @@ export function UsersTable() {
                           <User size={14} className="mr-2" />
                           View Profile
                         </DropdownMenuItem>
-                        {user.permissions && user.permissions.length > 0 && (
-                          <DropdownMenuItem className="cursor-pointer text-sm">
-                            Manage Permissions ({user.permissions.length})
-                          </DropdownMenuItem>
-                        )}
+                        <DropdownMenuItem
+                          className="cursor-pointer text-sm"
+                          onClick={() => handleManagePermissions(user)}
+                        >
+                          <Shield size={14} className="mr-2" />
+                          Manage Permissions
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="cursor-pointer text-sm text-destructive hover:text-destructive"
@@ -358,7 +411,7 @@ export function UsersTable() {
         </Table>
       </div>
 
-      {/* Unified Dialog for Add, Edit, and Delete */}
+      {/* Unified Dialog for Add, Edit, Delete, and Permissions */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg">
           {dialogMode === "add" && (
@@ -618,6 +671,98 @@ export function UsersTable() {
                   )}
                 </Button>
               </div>
+            </>
+          )}
+
+          {dialogMode === "permissions" && selectedUser && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Shield size={18} />
+                  Manage Permissions - {selectedUser.name}{" "}
+                  {selectedUser.surname}
+                </DialogTitle>
+              </DialogHeader>
+
+              {permissionsLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="text-center space-y-3">
+                    <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                    <p className="text-sm text-muted-foreground">
+                      Loading permissions...
+                    </p>
+                  </div>
+                </div>
+              ) : permissionsError ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="text-center space-y-3">
+                    <div className="text-destructive font-medium">
+                      Error loading permissions
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {permissionsError.message || "Failed to load permissions"}
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="text-sm text-muted-foreground">
+                    Configure user permissions and access levels
+                  </div>
+
+                  <div className="space-y-3 max-h-80 overflow-y-auto">
+                    {permissionsData && Object.keys(permissionsData).length > 0 ? (
+                      Object.entries(permissionsData).map(([key, value]) => (
+                        <div
+                          key={key}
+                          className="flex items-center justify-between py-2 px-3 border border-border rounded-md bg-muted/25"
+                        >
+                          <div className="flex-1">
+                            <Label
+                              htmlFor={`permission-${key}`}
+                              className="text-sm font-medium cursor-pointer capitalize"
+                            >
+                              {key.replace(/_/g, ' ')}
+                            </Label>
+                          </div>
+                          <Switch
+                            id={`permission-${key}`}
+                            checked={value}
+                            onCheckedChange={() =>
+                              handlePermissionToggle(key)
+                            }
+                            disabled={isUpdating}
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-6 text-muted-foreground">
+                        No permissions found for this user.
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex justify-end gap-2 pt-4 border-t">
+                    <Button
+                      variant="outline"
+                      onClick={() => setOpen(false)}
+                      disabled={isUpdating}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={handleSavePermissions}
+                      disabled={isUpdating || !Object.keys(permissionsData).length}
+                      className="flex items-center gap-2"
+                    >
+                      {isUpdating && (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      )}
+                      {isUpdating ? "Updating..." : "Save Permissions"}
+                    </Button>
+                  </div>
+                </div>
+              )}
             </>
           )}
         </DialogContent>

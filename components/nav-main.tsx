@@ -10,24 +10,37 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import useAuthStore from "@/stores/useAuthStore"
 
-export function NavMain({
-  items,
-}: {
-  items: {
-    title: string
-    url: string
-    icon?: Icon
-  }[]
-}) {
+// define the shape of nav items
+export interface NavItem {
+  title: string
+  url: string
+  icon?: Icon
+  permission?: string // 👈 optional permission key
+}
+
+export function NavMain({ items }: { items: NavItem[] }) {
   const pathname = usePathname() || "/"
+  const user = useAuthStore((s) => s.user)
+
+  // ✅ filter by permission
+  const allowedItems = (user
+    ? items.filter((item) => {
+        if (!item.permission) return true
+        return user.permissions?.[item.permission] === true
+      })
+    : []
+  )
 
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
         <SidebarMenu>
-          {items.map((item) => {
-            const isActive = pathname === item.url || pathname.startsWith(item.url + "/")
+          {allowedItems.map((item) => {
+            const isActive =
+              pathname === item.url || pathname.startsWith(item.url + "/")
+
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton
