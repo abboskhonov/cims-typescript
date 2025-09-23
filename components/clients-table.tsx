@@ -224,7 +224,7 @@ export function ClientsTable() {
       await addClient(payload)
       toast.success("Client added successfully")
       setOpen(false)
-      e.currentTarget.reset()
+      
     } catch (err: any) {
       toast.error(err.message || "Failed to add client")
     } finally {

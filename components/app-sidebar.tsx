@@ -20,8 +20,9 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
 import useAuthStore from "@/stores/useAuthStore"
+import { isAuthenticated } from "@/helpers/authHelpers"
+import { useRouter } from "next/navigation"
 
-// 👇 define all possible nav items with permissions
 const navMain: NavItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: IconDashboard, permission: "ceo" },
   { title: "Sales", url: "/sales", icon: IconChartBar, permission: "crm" },
@@ -33,14 +34,34 @@ const navMain: NavItem[] = [
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const user = useAuthStore((s) => s.user)
   const loading = useAuthStore((s) => s.loading)
-  const fetchUser = useAuthStore.getState().fetchUser // stable ref
+  const error = useAuthStore((s) => s.error)
+  const fetchUser = useAuthStore.getState().fetchUser
+ const router = useRouter()
+  const [checkedAuth, setCheckedAuth] = React.useState(false)
 
-  // fetch user once if not loaded
   React.useEffect(() => {
-    if (!user && !loading) {
-      fetchUser()
+    // check for token first
+    if (!isAuthenticated()) {
+      setCheckedAuth(true)
+      return
     }
-  }, [user, loading])
+
+    if (!user && !loading) {
+      fetchUser().finally(() => setCheckedAuth(true))
+    } else {
+      setCheckedAuth(true)
+    }
+  }, [user, loading, fetchUser])
+
+  if (!checkedAuth) {
+    return <div></div>
+  }
+
+  if (!isAuthenticated()) {
+    return (
+      router.push("/login")
+    )
+  }
 
   const displayUser = {
     name: user ? `${user.name} ${user.surname}` : "Loading...",
@@ -50,7 +71,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="offcanvas" {...props}>
-      {/* --- Header (logo / brand) --- */}
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -66,12 +86,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
 
-      {/* --- Main navigation (role-based) --- */}
       <SidebarContent>
         <NavMain items={navMain} />
       </SidebarContent>
 
-      {/* --- User profile (footer) --- */}
       <SidebarFooter>
         <NavUser user={displayUser} />
       </SidebarFooter>

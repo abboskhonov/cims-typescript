@@ -23,7 +23,6 @@ interface AdClientData {
   notes: string;
 }
 
-// Layout Option 1: Single Column with Sections
 export function AddClientFormSingleColumn() {
   const [formData, setFormData] = useState<AdClientData>({
     full_name: "",
@@ -31,7 +30,7 @@ export function AddClientFormSingleColumn() {
     username: "",
     phone_number: "",
     status: "contacted",
-    assistant_name: "",
+    assistant_name: "niki lauda",
     notes: "",
   });
 
@@ -39,15 +38,35 @@ export function AddClientFormSingleColumn() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
+    console.log(`Field changed: ${name} = "${value}"`); // Debug log
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handlePlatformChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, platform: value }));
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = () => {
-    console.log(formData);
+    // Ensure all fields are included, converting undefined to empty string
+    const dataToSubmit = {
+      full_name: formData.full_name ?? "",
+      platform: formData.platform ?? "",
+      username: formData.username ?? "",
+      phone_number: formData.phone_number ?? "",
+      status: formData.status,
+      assistant_name: formData.assistant_name ?? "", // Use nullish coalescing to handle undefined
+      notes: formData.notes ?? "",
+    };
+    
+    console.log("Form Data:", dataToSubmit);
+    console.log("Raw formData before processing:", formData);
+    
+    // Here's where you'd typically send the data to your API
+    // fetch('/api/clients', {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify(dataToSubmit)
+    // });
   };
 
   return (
@@ -65,6 +84,7 @@ export function AddClientFormSingleColumn() {
               <div>
                 <Label htmlFor="full_name" className="text-sm font-medium">Full Name *</Label>
                 <Input
+                  id="full_name"
                   name="full_name"
                   value={formData.full_name}
                   onChange={handleChange}
@@ -75,6 +95,7 @@ export function AddClientFormSingleColumn() {
               <div>
                 <Label htmlFor="phone_number" className="text-sm font-medium">Phone Number *</Label>
                 <Input
+                  id="phone_number"
                   name="phone_number"
                   value={formData.phone_number}
                   onChange={handleChange}
@@ -91,7 +112,7 @@ export function AddClientFormSingleColumn() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="platform" className="text-sm font-medium">Platform *</Label>
-                <Select onValueChange={handlePlatformChange}>
+                <Select onValueChange={(value) => handleSelectChange("platform", value)}>
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select a platform" />
                   </SelectTrigger>
@@ -101,10 +122,12 @@ export function AddClientFormSingleColumn() {
                     <SelectItem value="facebook">Facebook</SelectItem>
                   </SelectContent>
                 </Select>
+                <p className="text-xs text-gray-500 mt-1">Selected: {formData.platform || "None"}</p>
               </div>
               <div>
                 <Label htmlFor="username" className="text-sm font-medium">Username *</Label>
                 <Input
+                  id="username"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
@@ -121,15 +144,19 @@ export function AddClientFormSingleColumn() {
             <div>
               <Label htmlFor="assistant_name" className="text-sm font-medium">Assistant Name</Label>
               <Input
+                id="assistant_name"
                 name="assistant_name"
                 value={formData.assistant_name}
                 onChange={handleChange}
                 className="mt-1"
+                placeholder="Enter assistant name"
               />
+              <p className="text-xs text-gray-500 mt-1">Current value: "{formData.assistant_name}"</p>
             </div>
             <div>
               <Label htmlFor="notes" className="text-sm font-medium">Notes</Label>
               <Textarea
+                id="notes"
                 name="notes"
                 value={formData.notes}
                 onChange={handleChange}
@@ -138,6 +165,14 @@ export function AddClientFormSingleColumn() {
                 placeholder="Add any additional notes about this client..."
               />
             </div>
+          </div>
+
+          {/* Debug section */}
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <h4 className="font-medium mb-2">Current Form Data (Debug):</h4>
+            <pre className="text-xs bg-white p-2 rounded border overflow-auto">
+              {JSON.stringify(formData, null, 2)}
+            </pre>
           </div>
 
           <div className="flex justify-end space-x-3 pt-4">
@@ -154,272 +189,4 @@ export function AddClientFormSingleColumn() {
   );
 }
 
-// Layout Option 2: Three Column Layout
-export function AddClientFormThreeColumn() {
-  const [formData, setFormData] = useState<AdClientData>({
-    full_name: "",
-    platform: "",
-    username: "",
-    phone_number: "",
-    status: "contacted",
-    assistant_name: "",
-    notes: "",
-  });
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handlePlatformChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, platform: value }));
-  };
-
-  const handleSubmit = () => {
-    console.log(formData);
-  };
-
-  return (
-    <Card className="max-w-6xl mx-auto">
-      <CardHeader>
-        <CardTitle className="text-xl">Add New Client</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Column 1: Personal Info */}
-            <div className="space-y-4">
-              <h4 className="font-medium text-sm uppercase tracking-wide text-gray-500">Personal Info</h4>
-              <div>
-                <Label htmlFor="full_name">Full Name</Label>
-                <Input
-                  name="full_name"
-                  value={formData.full_name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="phone_number">Phone Number</Label>
-                <Input
-                  name="phone_number"
-                  value={formData.phone_number}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="assistant_name">Assistant Name</Label>
-                <Input
-                  name="assistant_name"
-                  value={formData.assistant_name}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Column 2: Platform Info */}
-            <div className="space-y-4">
-              <h4 className="font-medium text-sm uppercase tracking-wide text-gray-500">Platform Info</h4>
-              <div>
-                <Label htmlFor="platform">Platform</Label>
-                <Select onValueChange={handlePlatformChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select platform" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="instagram">Instagram</SelectItem>
-                    <SelectItem value="telegram">Telegram</SelectItem>
-                    <SelectItem value="facebook">Facebook</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Column 3: Notes */}
-            <div className="space-y-4">
-              <h4 className="font-medium text-sm uppercase tracking-wide text-gray-500">Additional Info</h4>
-              <div>
-                <Label htmlFor="notes">Notes</Label>
-                <Textarea
-                  name="notes"
-                  value={formData.notes}
-                  onChange={handleChange}
-                  rows={6}
-                  placeholder="Enter any additional notes..."
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-center pt-4">
-            <Button type="button" onClick={handleSubmit} className="px-8">
-              Add Client
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// Layout Option 3: Compact Horizontal Layout
-export function AddClientFormCompact() {
-  const [formData, setFormData] = useState<AdClientData>({
-    full_name: "",
-    platform: "",
-    username: "",
-    phone_number: "",
-    status: "contacted",
-    assistant_name: "",
-    notes: "",
-  });
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handlePlatformChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, platform: value }));
-  };
-
-  const handleSubmit = () => {
-    console.log(formData);
-  };
-
-  return (
-    <Card className="max-w-5xl mx-auto">
-      <CardHeader className="pb-4">
-        <CardTitle>Add New Client</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {/* Row 1 */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="full_name" className="text-xs font-medium uppercase">Full Name</Label>
-              <Input
-                name="full_name"
-                value={formData.full_name}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="platform" className="text-xs font-medium uppercase">Platform</Label>
-              <Select onValueChange={handlePlatformChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Platform" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="instagram">Instagram</SelectItem>
-                  <SelectItem value="telegram">Telegram</SelectItem>
-                  <SelectItem value="facebook">Facebook</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="username" className="text-xs font-medium uppercase">Username</Label>
-              <Input
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          </div>
-
-          {/* Row 2 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="phone_number" className="text-xs font-medium uppercase">Phone Number</Label>
-              <Input
-                name="phone_number"
-                value={formData.phone_number}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="assistant_name" className="text-xs font-medium uppercase">Assistant Name</Label>
-              <Input
-                name="assistant_name"
-                value={formData.assistant_name}
-                onChange={handleChange}
-              />
-            </div>
-          </div>
-
-          {/* Row 3 */}
-          <div>
-            <Label htmlFor="notes" className="text-xs font-medium uppercase">Notes</Label>
-            <Textarea
-              name="notes"
-              value={formData.notes}
-              onChange={handleChange}
-              rows={3}
-              placeholder="Additional notes..."
-            />
-          </div>
-
-          <div className="flex justify-between items-center pt-2">
-            <div className="text-xs text-gray-500">
-              * Required fields
-            </div>
-            <Button type="button" onClick={handleSubmit}>
-              Add Client
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// Demo Component to show all layouts
-export default function AddClientLayouts() {
-  const [activeLayout, setActiveLayout] = useState("single");
-
-  return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-center space-x-4 mb-8">
-        <Button 
-          onClick={() => setActiveLayout("single")} 
-          variant={activeLayout === "single" ? "default" : "outline"}
-        >
-          Single Column
-        </Button>
-        <Button 
-          onClick={() => setActiveLayout("three")} 
-          variant={activeLayout === "three" ? "default" : "outline"}
-        >
-          Three Column
-        </Button>
-        <Button 
-          onClick={() => setActiveLayout("compact")} 
-          variant={activeLayout === "compact" ? "default" : "outline"}
-        >
-          Compact
-        </Button>
-      </div>
-
-      {activeLayout === "single" && <AddClientFormSingleColumn />}
-      {activeLayout === "three" && <AddClientFormThreeColumn />}
-      {activeLayout === "compact" && <AddClientFormCompact />}
-    </div>
-  );
-}
+export default AddClientFormSingleColumn;

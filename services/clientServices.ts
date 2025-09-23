@@ -71,11 +71,14 @@ const transformFrontendToBackend = (client: Partial<Client>): Partial<BackendCli
   if (client.username !== undefined) backend.username = client.username
   if (client.phone_number !== undefined) backend.phone_number = client.phone_number
   if (client.status !== undefined) backend.status = client.status
-  if (client.assistant_name !== undefined) backend.assistant_name = client.assistant
+  if (client.assistant_name !== undefined && client.assistant_name !== null) {
+    backend.assistant_name = client.assistant_name
+  }
   if (client.notes !== undefined) backend.notes = client.notes
 
   return backend
 }
+
 
 // GET all clients
 export const getClients = async (): Promise<Client[]> => {

@@ -1,6 +1,7 @@
 import { AppSidebar } from '@/components/app-sidebar'
 import CardBalances from '@/components/bank-cards'
 import  ExchangeRate  from '@/components/exchange-rate'
+import { PermissionGuard } from '@/components/permissionGuard'
 import { SectionCards } from '@/components/section-cards'
 import { SiteHeader } from '@/components/site-header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
@@ -8,6 +9,7 @@ import React from 'react'
 
 const page = () => {
   return (
+    <PermissionGuard required={"finance_list"}>
      <SidebarProvider
       style={
         {
@@ -16,7 +18,7 @@ const page = () => {
         } as React.CSSProperties
       }
     >
-      <AppSidebar variant="inset" />
+      <AppSidebar variant="sidebar" />
       <SidebarInset>
       <SiteHeader />
         <div className="flex flex-1 flex-col">
@@ -29,6 +31,7 @@ const page = () => {
         </div>
       </SidebarInset>
     </SidebarProvider>
+    </PermissionGuard>
   )
 }
 

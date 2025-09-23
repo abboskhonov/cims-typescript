@@ -23,7 +23,6 @@ export function validateRegister(
   if (values.password.length < 6) return "Password must be at least 6 characters.";
   if (values.password !== values.confirm) return "Passwords do not match.";
   if (!values.company_code) return "Company code is required.";
-  // rudimentary email format
   if (!/^\S+@\S+\.\S+$/.test(values.email)) return "Email is invalid.";
   return null;
 }
@@ -39,4 +38,13 @@ export function validateLogin({
   if (!password) return "Password is required.";
   if (!/^\S+@\S+\.\S+$/.test(email)) return "Email is invalid.";
   return null;
+}
+
+// ✅ Authentication helper
+const TOKEN_KEY = "token";
+
+export function isAuthenticated(): boolean {
+  if (typeof window === "undefined") return false;
+  const token = localStorage.getItem(TOKEN_KEY);
+  return !!token;
 }

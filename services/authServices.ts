@@ -20,10 +20,9 @@ export async function loginUser({ email, password }: { email: string; password: 
       "Content-Type": "application/x-www-form-urlencoded",
     },
   });
-  
+
   console.log("Raw API response:", response);
   console.log("Response data:", response.data);
-  
   return response.data;
 }
 
@@ -33,7 +32,14 @@ export async function verifyOtp(email: string, code: string) {
     email,
     code,
   });
+  return data;
+}
 
+// ✅ resend verification code
+export async function resendVerificationCode(email: string) {
+  const { data } = await api.post("/auth/resend-verification", {
+    email,
+  });
   return data;
 }
 

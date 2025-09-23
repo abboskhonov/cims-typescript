@@ -5,6 +5,7 @@ import api from "@/lib/api"
 interface AuthState {
   user: User | null
   accessToken: string | null
+  permission: string
   loading: boolean
   error: string | null
   setUser: (u: User | null) => void

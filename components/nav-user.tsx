@@ -1,5 +1,4 @@
 "use client"
-
 import {
   IconCreditCard,
   IconDotsVertical,
@@ -7,7 +6,6 @@ import {
   IconNotification,
   IconUserCircle,
 } from "@tabler/icons-react"
-
 import {
   Avatar,
   AvatarFallback,
@@ -28,7 +26,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-
 import { logoutUser } from "@/services/authServices" // ✅ import logout service
 import { useRouter } from "next/navigation" // for redirect after logout
 
@@ -49,6 +46,17 @@ export function NavUser({
     router.push("/login") // redirect to login page
   }
 
+  // Generate initials from user's name
+  const getInitials = (name: string) => {
+    const names = name.trim().split(' ')
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase()
+    }
+    return `${names[0].charAt(0)}${names[names.length - 1].charAt(0)}`.toUpperCase()
+  }
+
+  const userInitials = getInitials(user.name)
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -60,7 +68,7 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg grayscale">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">{userInitials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -72,7 +80,7 @@ export function NavUser({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
             side={isMobile ? "bottom" : "right"}
             align="end"
             sideOffset={4}
@@ -81,7 +89,7 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">{userInitials}</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
@@ -101,10 +109,7 @@ export function NavUser({
                 <IconCreditCard />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Notifications
-              </DropdownMenuItem>
+             
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
