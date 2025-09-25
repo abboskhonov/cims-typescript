@@ -8,10 +8,14 @@ export default function VerifyEmailPage() {
   const [email, setEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    const value = searchParams.get("email");
-    if (!value) return window.location.href = "/login";
-    setEmail(value);
-  }, [searchParams]);
+  const value = searchParams.get("email")
+  if (!value) {
+    window.location.href = "/login"
+    return
+  }
+  setEmail(value)
+}, [searchParams])
+
 
   if (!email) return null;
 
