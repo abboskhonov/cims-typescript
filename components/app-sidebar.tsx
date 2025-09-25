@@ -31,16 +31,15 @@ const navMain: NavItem[] = [
   { title: "WordPress", url: "/wordpress", icon: IconBrandWordpress, permission: "project_toggle" },
 ]
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const user = useAuthStore((s) => s.user)
   const loading = useAuthStore((s) => s.loading)
-  const error = useAuthStore((s) => s.error)
   const fetchUser = useAuthStore.getState().fetchUser
- const router = useRouter()
+  const router = useRouter()
   const [checkedAuth, setCheckedAuth] = React.useState(false)
 
+  // Check authentication & load user
   React.useEffect(() => {
-    // check for token first
     if (!isAuthenticated()) {
       setCheckedAuth(true)
       return
@@ -53,14 +52,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
   }, [user, loading, fetchUser])
 
+  // Redirect if not authenticated
+  React.useEffect(() => {
+    if (checkedAuth && !isAuthenticated()) {
+      router.push("/login")
+    }
+  }, [checkedAuth, router])
+
+  // Loading state while checking auth
   if (!checkedAuth) {
-    return <div></div>
+    return (
+      <div className="flex items-center justify-center p-4">
+        <span className="text-sm text-muted-foreground">Checking authentication...</span>
+      </div>
+    )
   }
 
+  // If not authenticated, render nothing (redirect will fire)
   if (!isAuthenticated()) {
-    return (
-      router.push("/login")
-    )
+    return null
   }
 
   const displayUser = {
