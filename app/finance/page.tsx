@@ -1,8 +1,8 @@
 import { AppSidebar } from '@/components/app-sidebar'
 import CardBalances from '@/components/bank-cards'
-import  ExchangeRate  from '@/components/exchange-rate'
+
 import { PermissionGuard } from '@/components/permissionGuard'
-import { SectionCards } from '@/components/section-cards'
+
 import { SiteHeader } from '@/components/site-header'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import React from 'react'
