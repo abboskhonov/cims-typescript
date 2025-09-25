@@ -3,9 +3,13 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
-import { usePayments } from "@/hooks/usePayments";
+import { usePayments, type PaymentFormInput } from "@/hooks/usePayments";
 import { Toaster, toast } from "sonner"; // ✅ import both Toaster and toast
 
 const AddPaymentForm = () => {
@@ -26,7 +30,7 @@ const AddPaymentForm = () => {
 
   const handleSubmit = async () => {
     if (!projectName.trim()) {
-      toast.error("Project name is required"); // ✅ simpler sonner style
+      toast.error("Project name is required");
       return;
     }
 
@@ -41,11 +45,11 @@ const AddPaymentForm = () => {
     }
 
     try {
-      const paymentData = {
+      const paymentData: PaymentFormInput = {
         projectName: projectName.trim(),
         nextPaymentDate: date.toISOString(),
         amount: parseFloat(amount),
-        status: "Pending",
+        status: "Pending", // ✅ valid literal type
       };
 
       await createPayment(paymentData);
@@ -118,7 +122,11 @@ const AddPaymentForm = () => {
             </div>
           )}
 
-          <Button onClick={handleSubmit} disabled={isCreating} className="w-full h-12">
+          <Button
+            onClick={handleSubmit}
+            disabled={isCreating}
+            className="w-full h-12"
+          >
             {isCreating ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
