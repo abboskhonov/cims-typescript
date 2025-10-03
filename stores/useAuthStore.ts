@@ -1,18 +1,17 @@
-import { create } from "zustand"
-import type { User } from "@/types/auth"
-import api from "@/lib/api"
+  import { create } from "zustand";
+import type { User } from "@/types/auth";
+import api from "@/lib/api";
 
 interface AuthState {
-  user: User | null
-  accessToken: string | null
-  permission: string
-  loading: boolean
-  error: string | null
-  setUser: (u: User | null) => void
-  setToken: (token: string | null) => void
-  setLoading: (v: boolean) => void
-  logout: () => void
-  fetchUser: () => Promise<void>
+  user: User | null;
+  accessToken: string | null;
+  loading: boolean;
+  error: string | null;
+  setUser: (u: User | null) => void;
+  setToken: (token: string | null) => void;
+  setLoading: (v: boolean) => void;
+  logout: () => void;
+  fetchUser: () => Promise<void>;
 }
 
 const STORAGE_KEY = "token"

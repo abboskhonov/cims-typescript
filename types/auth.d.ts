@@ -4,6 +4,7 @@ export interface User {
   name: string;
   surname?: string;
   role?: string;
+  permissions?: Record<string, any>;
   // add other user fields
 }
 

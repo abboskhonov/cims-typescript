@@ -57,10 +57,10 @@ export function AddClientFormSingleColumn() {
       assistant_name: formData.assistant_name ?? "", // Use nullish coalescing to handle undefined
       notes: formData.notes ?? "",
     };
-    
+
     console.log("Form Data:", dataToSubmit);
     console.log("Raw formData before processing:", formData);
-    
+
     // Here's where you'd typically send the data to your API
     // fetch('/api/clients', {
     //   method: 'POST',
@@ -73,16 +73,22 @@ export function AddClientFormSingleColumn() {
     <Card className="max-w-2xl mx-auto">
       <CardHeader className="text-center">
         <CardTitle className="text-2xl font-bold">Add New Client</CardTitle>
-        <p className="text-sm text-gray-600">Fill in the client information below</p>
+        <p className="text-sm text-gray-600">
+          Fill in the client information below
+        </p>
       </CardHeader>
       <CardContent>
         <div className="space-y-8">
           {/* Basic Information Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold border-b pb-2">Basic Information</h3>
+            <h3 className="text-lg font-semibold border-b pb-2">
+              Basic Information
+            </h3>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="full_name" className="text-sm font-medium">Full Name *</Label>
+                <Label htmlFor="full_name" className="text-sm font-medium">
+                  Full Name *
+                </Label>
                 <Input
                   id="full_name"
                   name="full_name"
@@ -93,7 +99,9 @@ export function AddClientFormSingleColumn() {
                 />
               </div>
               <div>
-                <Label htmlFor="phone_number" className="text-sm font-medium">Phone Number *</Label>
+                <Label htmlFor="phone_number" className="text-sm font-medium">
+                  Phone Number *
+                </Label>
                 <Input
                   id="phone_number"
                   name="phone_number"
@@ -108,11 +116,19 @@ export function AddClientFormSingleColumn() {
 
           {/* Platform Information Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold border-b pb-2">Platform Information</h3>
+            <h3 className="text-lg font-semibold border-b pb-2">
+              Platform Information
+            </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="platform" className="text-sm font-medium">Platform *</Label>
-                <Select onValueChange={(value) => handleSelectChange("platform", value)}>
+                <Label htmlFor="platform" className="text-sm font-medium">
+                  Platform *
+                </Label>
+                <Select
+                  onValueChange={(value) =>
+                    handleSelectChange("platform", value)
+                  }
+                >
                   <SelectTrigger className="mt-1">
                     <SelectValue placeholder="Select a platform" />
                   </SelectTrigger>
@@ -122,10 +138,14 @@ export function AddClientFormSingleColumn() {
                     <SelectItem value="facebook">Facebook</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-gray-500 mt-1">Selected: {formData.platform || "None"}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Selected: {formData.platform || "None"}
+                </p>
               </div>
               <div>
-                <Label htmlFor="username" className="text-sm font-medium">Username *</Label>
+                <Label htmlFor="username" className="text-sm font-medium">
+                  Username *
+                </Label>
                 <Input
                   id="username"
                   name="username"
@@ -140,9 +160,13 @@ export function AddClientFormSingleColumn() {
 
           {/* Additional Information Section */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold border-b pb-2">Additional Information</h3>
+            <h3 className="text-lg font-semibold border-b pb-2">
+              Additional Information
+            </h3>
             <div>
-              <Label htmlFor="assistant_name" className="text-sm font-medium">Assistant Name</Label>
+              <Label htmlFor="assistant_name" className="text-sm font-medium">
+                Assistant Name
+              </Label>
               <Input
                 id="assistant_name"
                 name="assistant_name"
@@ -151,10 +175,14 @@ export function AddClientFormSingleColumn() {
                 className="mt-1"
                 placeholder="Enter assistant name"
               />
-              <p className="text-xs text-gray-500 mt-1">Current value: &quot;{formData.assistant_name}&quot;</p>
+              <p className="text-xs text-gray-500 mt-1">
+                Current value: &quot;{formData.assistant_name}&quot;
+              </p>
             </div>
             <div>
-              <Label htmlFor="notes" className="text-sm font-medium">Notes</Label>
+              <Label htmlFor="notes" className="text-sm font-medium">
+                Notes
+              </Label>
               <Textarea
                 id="notes"
                 name="notes"

@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Toaster } from "@/components/ui/sonner"
+import * as React from "react";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
 import {
   Table,
   TableBody,
@@ -12,7 +12,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +20,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import {
   MoreHorizontal,
   Edit,
@@ -31,27 +31,27 @@ import {
   Building,
   User,
   StickyNote,
-} from "lucide-react"
-import useClientStore from "@/stores/useClientStore"
+} from "lucide-react";
+import useClientStore from "@/stores/useClientStore";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { toast } from "sonner"
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { toast } from "sonner";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
-import { Client } from "@/services/clientServices"
+import { Client } from "@/services/clientServices";
 
 // Frontend → Backend mapping
 /*
@@ -75,137 +75,141 @@ const STATUS_OPTIONS = [
   { value: "continuing", label: "Continuing" },
   { value: "finished", label: "Finished" },
   { value: "rejected", label: "Rejected" },
-] as const
+] as const;
 
 const getStatusLabel = (value?: string): string => {
-  return STATUS_OPTIONS.find((s) => s.value === value)?.label || "Unknown"
-}
+  return STATUS_OPTIONS.find((s) => s.value === value)?.label || "Unknown";
+};
 
 const getStatusVariant = (status?: string) => {
-  if (!status) return "outline"
+  if (!status) return "outline";
   switch (status) {
     case "contacted":
     case "need_to_call":
-      return "default"
+      return "default";
     case "project_started":
     case "continuing":
-      return "success"
+      return "success";
     case "finished":
-      return "secondary"
+      return "secondary";
     case "rejected":
-      return "destructive"
+      return "destructive";
     default:
-      return "outline"
+      return "outline";
   }
-}
+};
 
 // Utility: Get initials from full name
 const getInitials = (name: string) => {
-  if (!name) return "?"
+  if (!name) return "?";
   return name
     .split(" ")
     .map((n) => n.charAt(0))
     .join("")
     .toUpperCase()
-    .slice(0, 2)
-}
+    .slice(0, 2);
+};
 
 // Format date for display
 const formatDate = (dateString?: string) => {
-  if (!dateString) return "-"
+  if (!dateString) return "-";
   try {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
-    })
+    });
   } catch {
-    return "-"
+    return "-";
   }
-}
+};
 
 export function ClientsTable() {
-  const clients = useClientStore((s) => s.clients)
-  const loading = useClientStore((s) => s.loading)
-  const error = useClientStore((s) => s.error)
-  const fetchClients = useClientStore((s) => s.fetchClients)
-  const addClient = useClientStore((s) => s.addClient)
-  const updateClient = useClientStore((s) => s.updateClient)
-  const deleteClient = useClientStore((s) => s.deleteClient)
-  const clearError = useClientStore((s) => s.clearError)
+  const clients = useClientStore((s) => s.clients);
+  const loading = useClientStore((s) => s.loading);
+  const error = useClientStore((s) => s.error);
+  const fetchClients = useClientStore((s) => s.fetchClients);
+  const addClient = useClientStore((s) => s.addClient);
+  const updateClient = useClientStore((s) => s.updateClient);
+  const deleteClient = useClientStore((s) => s.deleteClient);
+  const clearError = useClientStore((s) => s.clearError);
 
-  const [isSaving, setIsSaving] = React.useState(false)
-  const [loadingDelete, setLoadingDelete] = React.useState(false)
-  const [selectedClient, setSelectedClient] = React.useState<Client | null>(null)
-  const [open, setOpen] = React.useState(false)
-  const [dialogMode, setDialogMode] = React.useState<"add" | "edit" | "delete">("add")
+  const [isSaving, setIsSaving] = React.useState(false);
+  const [loadingDelete, setLoadingDelete] = React.useState(false);
+  const [selectedClient, setSelectedClient] = React.useState<Client | null>(
+    null
+  );
+  const [open, setOpen] = React.useState(false);
+  const [dialogMode, setDialogMode] = React.useState<"add" | "edit" | "delete">(
+    "add"
+  );
 
   React.useEffect(() => {
-    fetchClients().catch(console.error)
-  }, [fetchClients])
+    fetchClients().catch(console.error);
+  }, [fetchClients]);
 
   React.useEffect(() => {
     if (open) {
-      clearError()
+      clearError();
     }
-  }, [open, clearError])
+  }, [open, clearError]);
 
   const handleAddClient = () => {
-    setSelectedClient(null)
-    setDialogMode("add")
-    setOpen(true)
-  }
+    setSelectedClient(null);
+    setDialogMode("add");
+    setOpen(true);
+  };
 
   const handleEditClient = (client: Client) => {
-    setSelectedClient(client)
-    setDialogMode("edit")
-    setOpen(true)
-  }
+    setSelectedClient(client);
+    setDialogMode("edit");
+    setOpen(true);
+  };
 
   const handleDeleteClient = (client: Client) => {
-    setSelectedClient(client)
-    setDialogMode("delete")
-    setOpen(true)
-  }
+    setSelectedClient(client);
+    setDialogMode("delete");
+    setOpen(true);
+  };
 
   const handleConfirmDelete = async () => {
-    if (!selectedClient) return
-    setLoadingDelete(true)
+    if (!selectedClient) return;
+    setLoadingDelete(true);
     try {
-      await deleteClient(selectedClient.id)
-      toast.success("Client deleted successfully")
-      setOpen(false)
-      setSelectedClient(null)
+      await deleteClient(selectedClient.id);
+      toast.success("Client deleted successfully");
+      setOpen(false);
+      setSelectedClient(null);
     } catch (err) {
       if (err instanceof Error) {
-        toast.error(err.message || "Failed to delete client")
+        toast.error(err.message || "Failed to delete client");
       } else {
-        toast.error("An unknown error occurred while deleting client.")
+        toast.error("An unknown error occurred while deleting client.");
       }
     } finally {
-      setLoadingDelete(false)
+      setLoadingDelete(false);
     }
-  }
+  };
 
   const handleAddClientSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (isSaving) return
+    e.preventDefault();
+    if (isSaving) return;
 
-    const formData = new FormData(e.currentTarget)
-    const full_name = formData.get("full_name") as string
-    const phone_number = formData.get("phone_number") as string
-    const platform = formData.get("platform") as string
-    const status = formData.get("status") as string
-    const assistant_name = formData.get("assistant_name") as string
-    const notes = formData.get("notes") as string
+    const formData = new FormData(e.currentTarget);
+    const full_name = formData.get("full_name") as string;
+    const phone_number = formData.get("phone_number") as string;
+    const platform = formData.get("platform") as string;
+    const status = formData.get("status") as string;
+    const assistant_name = formData.get("assistant_name") as string;
+    const notes = formData.get("notes") as string;
 
     // Validation
     if (!full_name || !platform) {
-      toast.error("Full name and platform are required.")
-      return
+      toast.error("Full name and platform are required.");
+      return;
     }
 
-    setIsSaving(true)
+    setIsSaving(true);
     try {
       const payload: Omit<Client, "id" | "created_at" | "updated_at"> = {
         full_name,
@@ -215,28 +219,29 @@ export function ClientsTable() {
         status,
         assistant_name,
         notes,
-      }
+      };
 
-      await addClient(payload)
-      toast.success("Client added successfully")
-      setOpen(false)
-      
+      await addClient(payload);
+      toast.success("Client added successfully");
+      setOpen(false);
     } catch (err) {
       if (err instanceof Error) {
-        toast.error(err.message || "Failed to add client")
+        toast.error(err.message || "Failed to add client");
       } else {
-        toast.error("An unknown error occurred while adding client.")
+        toast.error("An unknown error occurred while adding client.");
       }
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
 
-  const handleEditClientSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (isSaving || !selectedClient) return
+  const handleEditClientSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+    if (isSaving || !selectedClient) return;
 
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData(e.currentTarget);
     const payload: Partial<Client> = {
       full_name: formData.get("full_name") as string,
       phone_number: formData.get("phone_number") as string,
@@ -244,32 +249,32 @@ export function ClientsTable() {
       status: formData.get("status") as string,
       assistant_name: formData.get("assistant_name") as string,
       notes: formData.get("notes") as string,
-    }
+    };
 
-    setIsSaving(true)
+    setIsSaving(true);
     try {
-      await updateClient(selectedClient.id, payload)
-      toast.success("Client updated successfully")
-      setOpen(false)
-      setSelectedClient(null)
+      await updateClient(selectedClient.id, payload);
+      toast.success("Client updated successfully");
+      setOpen(false);
+      setSelectedClient(null);
     } catch (err) {
       if (err instanceof Error) {
-        toast.error(err.message || "Failed to update client")
+        toast.error(err.message || "Failed to update client");
       } else {
-        toast.error("An unknown error occurred while updating client.")
+        toast.error("An unknown error occurred while updating client.");
       }
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
 
   const handleDialogClose = (isOpen: boolean) => {
     if (!isOpen && !isSaving && !loadingDelete) {
-      setOpen(false)
-      setSelectedClient(null)
-      clearError()
+      setOpen(false);
+      setSelectedClient(null);
+      clearError();
     }
-  }
+  };
 
   // Loading state
   if (loading) {
@@ -279,12 +284,14 @@ export function ClientsTable() {
           <div className="flex items-center justify-center p-12">
             <div className="text-center space-y-3">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-              <p className="text-sm text-muted-foreground">Loading clients...</p>
+              <p className="text-sm text-muted-foreground">
+                Loading clients...
+              </p>
             </div>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   // Error state
@@ -294,13 +301,19 @@ export function ClientsTable() {
         <div className="border border-border rounded-md overflow-x-auto bg-card">
           <div className="flex items-center justify-center p-12">
             <div className="text-center space-y-3">
-              <div className="text-destructive font-medium">Error Loading Clients</div>
+              <div className="text-destructive font-medium">
+                Error Loading Clients
+              </div>
               <p className="text-sm text-muted-foreground">{error}</p>
               <div className="flex gap-2 justify-center">
                 <Button variant="outline" size="sm" onClick={clearError}>
                   Dismiss
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => fetchClients()}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fetchClients()}
+                >
                   Try Again
                 </Button>
               </div>
@@ -308,7 +321,7 @@ export function ClientsTable() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -347,18 +360,28 @@ export function ClientsTable() {
           <TableBody>
             {!clients || clients.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                <TableCell
+                  colSpan={8}
+                  className="text-center py-8 text-muted-foreground"
+                >
                   <div className="flex flex-col items-center space-y-2">
                     <p>No clients found</p>
-                    <Button variant="outline" size="sm" onClick={handleAddClient}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleAddClient}
+                    >
                       Add your first client
                     </Button>
                   </div>
                 </TableCell>
-              </TableRow> 
+              </TableRow>
             ) : (
               clients.map((client, index) => (
-                 <TableRow key={client.id || `client-${index}`} className="hover:bg-muted/50">
+                <TableRow
+                  key={client.id || `client-${index}`}
+                  className="hover:bg-muted/50"
+                >
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9">
@@ -393,7 +416,10 @@ export function ClientsTable() {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getStatusVariant(client.status)} className="text-xs">
+                    <Badge
+                      variant={getStatusVariant(client.status)}
+                      className="text-xs"
+                    >
                       {getStatusLabel(client.status)}
                     </Badge>
                   </TableCell>
@@ -410,7 +436,10 @@ export function ClientsTable() {
                   <TableCell>
                     {client.notes ? (
                       <div className="flex items-center gap-1">
-                        <StickyNote size={14} className="text-muted-foreground" />
+                        <StickyNote
+                          size={14}
+                          className="text-muted-foreground"
+                        />
                         <span className="text-sm">{client.notes}</span>
                       </div>
                     ) : (
@@ -421,14 +450,20 @@ export function ClientsTable() {
                   <TableCell className="text-center">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-8 w-8 p-0"
+                        >
                           <MoreHorizontal size={14} />
                           <span className="sr-only">Open menu</span>
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-40">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleEditClient(client)}>
+                        <DropdownMenuItem
+                          onClick={() => handleEditClient(client)}
+                        >
                           <Edit size={14} className="mr-2" />
                           Edit
                         </DropdownMenuItem>
@@ -587,7 +622,10 @@ export function ClientsTable() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="status">Status</Label>
-                    <Select name="status" defaultValue={selectedClient.status || ""}>
+                    <Select
+                      name="status"
+                      defaultValue={selectedClient.status || ""}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
@@ -659,7 +697,10 @@ export function ClientsTable() {
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
                   Are you sure you want to delete{" "}
-                  <span className="font-medium">{selectedClient.full_name}</span>? This action cannot be undone.
+                  <span className="font-medium">
+                    {selectedClient.full_name}
+                  </span>
+                  ? This action cannot be undone.
                 </p>
                 {error && (
                   <div className="text-sm text-destructive bg-destructive/10 p-2 rounded">
@@ -698,5 +739,5 @@ export function ClientsTable() {
         </DialogContent>
       </Dialog>
     </div>
-  )
-} 
+  );
+}

@@ -26,11 +26,7 @@ api.interceptors.response.use(
   (res) => res,
   async (err) => {
     const original = err.config as RetryableRequest | undefined;
-    if (
-      original &&
-      err.response?.status === 401 &&
-      !original._retry
-    ) {
+    if (original && err.response?.status === 401 && !original._retry) {
       original._retry = true;
       try {
         if (!refreshing) {

@@ -78,7 +78,16 @@ export function VerifyEmailForm({ email }: { email: string }) {
       let msg = "Verification failed";
       if (err instanceof Error) {
         msg = err.message;
-      } else if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+      } else if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        err.response &&
+        typeof err.response === "object" &&
+        "data" in err.response &&
+        err.response.data &&
+        typeof err.response.data === "object"
+      ) {
         const data = err.response.data as { message?: string };
         msg = data.message || msg;
       }
@@ -103,7 +112,16 @@ export function VerifyEmailForm({ email }: { email: string }) {
       let msg = "Failed to resend code";
       if (err instanceof Error) {
         msg = err.message;
-      } else if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+      } else if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        err.response &&
+        typeof err.response === "object" &&
+        "data" in err.response &&
+        err.response.data &&
+        typeof err.response.data === "object"
+      ) {
         const data = err.response.data as { message?: string };
         msg = data.message || msg;
       }
@@ -167,7 +185,6 @@ export function VerifyEmailForm({ email }: { email: string }) {
             </div>
 
             {/* Error Display */}
-       
 
             {/* Expired Notice */}
             {isExpired && (
@@ -185,9 +202,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
                 disabled={isLoading || code.length !== 4 || isExpired}
                 className="w-full"
               >
-                {isLoading && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading ? "Verifying..." : "Verify Email"}
               </Button>
 

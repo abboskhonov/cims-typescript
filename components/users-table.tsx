@@ -79,7 +79,9 @@ export function UsersTable() {
   >("edit");
 
   // Permissions state
-  const [permissionsData, setPermissionsData] = React.useState<{[key: string]: boolean}>({});
+  const [permissionsData, setPermissionsData] = React.useState<{
+    [key: string]: boolean;
+  }>({});
   const {
     data: permissions,
     isLoading: permissionsLoading,
@@ -130,7 +132,7 @@ export function UsersTable() {
   const handlePermissionToggle = (permissionKey: string) => {
     setPermissionsData((prev) => {
       const newPerms = { ...prev };
-      const keys = permissionKey.split('.');
+      const keys = permissionKey.split(".");
       let temp: Record<string, unknown> = newPerms;
       for (let i = 0; i < keys.length - 1; i++) {
         temp = temp[keys[i]];
@@ -149,7 +151,16 @@ export function UsersTable() {
       let message = "Failed to update permissions";
       if (err instanceof Error) {
         message = err.message;
-      } else if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+      } else if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        err.response &&
+        typeof err.response === "object" &&
+        "data" in err.response &&
+        err.response.data &&
+        typeof err.response.data === "object"
+      ) {
         const data = err.response.data as { message?: string };
         message = data.message || message;
       }
@@ -169,9 +180,18 @@ export function UsersTable() {
       setSelectedUser(null);
     } catch (err) {
       let message = "Failed to delete user. Try again.";
-       if (err instanceof Error) {
+      if (err instanceof Error) {
         message = err.message;
-      } else if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+      } else if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        err.response &&
+        typeof err.response === "object" &&
+        "data" in err.response &&
+        err.response.data &&
+        typeof err.response.data === "object"
+      ) {
         const data = err.response.data as { message?: string };
         message = data.message || message;
       }
@@ -210,7 +230,16 @@ export function UsersTable() {
       let message = "Failed to add user. Try again.";
       if (err instanceof Error) {
         message = err.message;
-      } else if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+      } else if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        err.response &&
+        typeof err.response === "object" &&
+        "data" in err.response &&
+        err.response.data &&
+        typeof err.response.data === "object"
+      ) {
         const data = err.response.data as { message?: string };
         message = data.message || message;
       }
@@ -576,7 +605,16 @@ export function UsersTable() {
                     let message = "Failed to update user";
                     if (err instanceof Error) {
                       message = err.message;
-                    } else if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+                    } else if (
+                      err &&
+                      typeof err === "object" &&
+                      "response" in err &&
+                      err.response &&
+                      typeof err.response === "object" &&
+                      "data" in err.response &&
+                      err.response.data &&
+                      typeof err.response.data === "object"
+                    ) {
                       const data = err.response.data as { message?: string };
                       message = data.message || message;
                     }
@@ -744,7 +782,8 @@ export function UsersTable() {
                   </div>
 
                   <div className="space-y-3 max-h-80 overflow-y-auto">
-                    {permissionsData && Object.keys(permissionsData).length > 0 ? (
+                    {permissionsData &&
+                    Object.keys(permissionsData).length > 0 ? (
                       Object.entries(permissionsData).map(([key, value]) => (
                         <div
                           key={key}
@@ -755,15 +794,13 @@ export function UsersTable() {
                               htmlFor={`permission-${key}`}
                               className="text-sm font-medium cursor-pointer capitalize"
                             >
-                              {key.replace(/_/g, ' ')}
+                              {key.replace(/_/g, " ")}
                             </Label>
                           </div>
                           <Switch
                             id={`permission-${key}`}
                             checked={value}
-                            onCheckedChange={() =>
-                              handlePermissionToggle(key)
-                            }
+                            onCheckedChange={() => handlePermissionToggle(key)}
                             disabled={isUpdating}
                           />
                         </div>
@@ -785,7 +822,9 @@ export function UsersTable() {
                     </Button>
                     <Button
                       onClick={handleSavePermissions}
-                      disabled={isUpdating || !Object.keys(permissionsData).length}
+                      disabled={
+                        isUpdating || !Object.keys(permissionsData).length
+                      }
                       className="flex items-center gap-2"
                     >
                       {isUpdating && (

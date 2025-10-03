@@ -5,11 +5,24 @@ import { useRouter } from "next/navigation";
 import { serializeRegisterForm, validateRegister } from "@/helpers/authHelpers";
 import { registerUser } from "@/services/authServices";
 import useAuthStore from "@/stores/useAuthStore";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2 } from "lucide-react";
@@ -55,7 +68,16 @@ export default function RegisterForm() {
       router.push(`/verify-email?email=${encodeURIComponent(payload.email)}`);
     } catch (err) {
       let message = "Registration failed.";
-      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+      if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        err.response &&
+        typeof err.response === "object" &&
+        "data" in err.response &&
+        err.response.data &&
+        typeof err.response.data === "object"
+      ) {
         const data = err.response.data as { message?: string };
         message = data.message || message;
       } else if (err instanceof Error) {
@@ -88,19 +110,14 @@ export default function RegisterForm() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">First name</Label>
-                <Input 
-                  id="name" 
-                  name="name" 
-                  required 
-                  disabled={pending}
-                />
+                <Input id="name" name="name" required disabled={pending} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="surname">Last name</Label>
-                <Input 
-                  id="surname" 
-                  name="surname" 
-                  required 
+                <Input
+                  id="surname"
+                  name="surname"
+                  required
                   disabled={pending}
                 />
               </div>
@@ -108,11 +125,11 @@ export default function RegisterForm() {
 
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input 
-                id="email" 
-                name="email" 
-                type="email" 
-                required 
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
                 disabled={pending}
               />
             </div>
@@ -127,8 +144,6 @@ export default function RegisterForm() {
                 disabled={pending}
               />
             </div>
-
-            
 
             <div className="space-y-2">
               <Label>Role</Label>
@@ -182,9 +197,10 @@ export default function RegisterForm() {
               {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {pending ? "Creating account..." : "Create account"}
             </Button>
-            
+
             <p className="text-xs text-muted-foreground text-center">
-              By continuing, you agree to our Terms of Service and Privacy Policy.
+              By continuing, you agree to our Terms of Service and Privacy
+              Policy.
             </p>
           </CardFooter>
         </form>

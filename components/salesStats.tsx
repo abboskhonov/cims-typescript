@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { useEffect } from "react"
+import { useEffect } from "react";
 import {
   Card,
   CardHeader,
   CardTitle,
   CardFooter,
   CardDescription,
-  CardAction
-} from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+  CardAction,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   IconTrendingUp,
   IconTrendingDown,
@@ -19,9 +19,9 @@ import {
   IconRocket,
   IconRepeat,
   IconTrophy,
-  IconX
-} from "@tabler/icons-react"
-import useSalesStore from "@/stores/useSalesStore"
+  IconX,
+} from "@tabler/icons-react";
+import useSalesStore from "@/stores/useSalesStore";
 
 const statConfig = [
   {
@@ -73,25 +73,29 @@ const statConfig = [
     icon: <IconX className="size-4" />,
     trend: "-3%",
   },
-]
+];
 
 export function SalesStatsCards() {
-  const { statistics, fetchSales, loading, error } = useSalesStore()
+  const { statistics, fetchSales, loading, error } = useSalesStore();
 
   useEffect(() => {
-    fetchSales()
-  }, [fetchSales])
+    fetchSales();
+  }, [fetchSales]);
 
-  if (loading) return <p className="p-4">Loading sales data...</p>
-  if (error) return <p className="p-4 text-red-500">Error: {error}</p>
+  if (loading) return <p className="p-4">Loading sales data...</p>;
+  if (error) return <p className="p-4 text-red-500">Error: {error}</p>;
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4 lg:px-6 py-6">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {statConfig.map(({ key, label, desc, icon, trend }) => {
-          const value = statistics[key as keyof typeof statistics] ?? 0
-          const isPositive = trend.startsWith("+")
-          const trendIcon = isPositive ? <IconTrendingUp /> : <IconTrendingDown />
+          const value = statistics[key as keyof typeof statistics] ?? 0;
+          const isPositive = trend.startsWith("+");
+          const trendIcon = isPositive ? (
+            <IconTrendingUp />
+          ) : (
+            <IconTrendingDown />
+          );
 
           return (
             <Card
@@ -116,9 +120,9 @@ export function SalesStatsCards() {
                 </div>
               </CardFooter>
             </Card>
-          )
+          );
         })}
       </div>
     </div>
-  )
+  );
 }

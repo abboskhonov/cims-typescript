@@ -62,8 +62,17 @@ export function LoginForm({
     } catch (err) {
       console.error("Login failed:", err);
       let backendMessage = "Login failed. Please try again.";
-      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
-        const data = err.response.data as { message?: string, detail?: string };
+      if (
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        err.response &&
+        typeof err.response === "object" &&
+        "data" in err.response &&
+        err.response.data &&
+        typeof err.response.data === "object"
+      ) {
+        const data = err.response.data as { message?: string; detail?: string };
         backendMessage = data.message || data.detail || backendMessage;
       }
       setError(backendMessage);
