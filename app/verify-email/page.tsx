@@ -8,14 +8,13 @@ function VerifyEmailContent() {
   const [email, setEmail] = useState<string | null>(null);
 
   useEffect(() => {
-  const value = searchParams.get("email")
-  if (!value) {
-    window.location.href = "/login"
-    return
-  }
-  setEmail(value)
-}, [searchParams])
-
+    const value = searchParams.get("email");
+    if (!value) {
+      window.location.href = "/login";
+      return;
+    }
+    setEmail(value);
+  }, [searchParams]);
 
   if (!email) return null;
 
@@ -28,7 +27,13 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center min-h-screen">
+          Loading...
+        </div>
+      }
+    >
       <VerifyEmailContent />
     </Suspense>
   );
