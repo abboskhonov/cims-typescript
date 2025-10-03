@@ -1,10 +1,16 @@
 "use client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  UseQueryResult,
+  UseMutationResult,
+} from "@tanstack/react-query";
 import api from "@/lib/api";
 
 // Backend schema
 export interface Payment {
-  id: number; 
+  id: number;
   project: string;
   date: string; // yyyy-mm-dd
   summ: number;
@@ -19,17 +25,49 @@ export interface PaymentFormInput {
   status: "Pending" | "Paid";
 }
 
+interface UsePaymentsReturn {
+  payments: Payment[];
+  isLoading: boolean;
+  isError: boolean;
+  error: Error | null;
+  refetch: () => Promise<any>;
+  createPayment: UseMutationResult<
+    Payment,
+    Error,
+    PaymentFormInput,
+    unknown
+  >["mutate"];
+  updatePayment: UseMutationResult<
+    Payment,
+    Error,
+    { paymentId: number; formData: Partial<PaymentFormInput> },
+    unknown
+  >["mutate"];
+  deletePayment: UseMutationResult<number, Error, number, unknown>["mutate"];
+  togglePayment: UseMutationResult<Payment, Error, number, unknown>["mutate"];
+  isCreating: boolean;
+  isUpdating: boolean;
+  isDeleting: boolean;
+  isToggling: boolean;
+  createError: Error | null;
+  updateError: Error | null;
+  deleteError: Error | null;
+  toggleError: Error | null;
+}
+
 // Mapper: frontend → backend
-const mapToPaymentSchema = (formData: PaymentFormInput): Omit<Payment, "id"> => ({
+const mapToPaymentSchema = (
+  formData: PaymentFormInput
+): Omit<Payment, "id"> => ({
   project: formData.projectName,
-   date: formData.nextPaymentDate.split("T")[0],
+  date: formData.nextPaymentDate.split("T")[0],
   summ: formData.amount,
   payment: formData.status === "Paid",
 });
 
 const PAYMENTS_QUERY_KEY = ["payments"];
 
-export const usePayments = () => {
+export const usePayments = (): UsePaymentsReturn => {
   const queryClient = useQueryClient();
 
   // ✅ Fetch all
@@ -47,7 +85,7 @@ export const usePayments = () => {
       return response.data.payments as Payment[];
     },
     staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   // ✅ Create

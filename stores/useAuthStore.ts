@@ -1,4 +1,4 @@
-  import { create } from "zustand";
+import { create } from "zustand";
 import type { User } from "@/types/auth";
 import api from "@/lib/api";
 
@@ -14,56 +14,56 @@ interface AuthState {
   fetchUser: () => Promise<void>;
 }
 
-const STORAGE_KEY = "token"
+const STORAGE_KEY = "token";
 
 const useAuthStore = create<AuthState>((set, get) => {
   // Init token only once (client-side only)
-  let initialToken: string | null = null
+  let initialToken: string | null = null;
   if (typeof window !== "undefined") {
-    initialToken = localStorage.getItem(STORAGE_KEY)
+    initialToken = localStorage.getItem(STORAGE_KEY);
   }
 
   // Stable functions
   const setUser = (user: User | null) => {
-    set({ user })
-  }
+    set({ user });
+  };
 
   const setToken = (accessToken: string | null) => {
-    set({ accessToken })
+    set({ accessToken });
     if (typeof window !== "undefined") {
       if (accessToken) {
-        localStorage.setItem(STORAGE_KEY, accessToken)
+        localStorage.setItem(STORAGE_KEY, accessToken);
       } else {
-        localStorage.removeItem(STORAGE_KEY)
+        localStorage.removeItem(STORAGE_KEY);
       }
     }
-  }
+  };
 
   const setLoading = (loading: boolean) => {
-    set({ loading })
-  }
+    set({ loading });
+  };
 
   const logout = () => {
-    set({ user: null, accessToken: null })
+    set({ user: null, accessToken: null });
     if (typeof window !== "undefined") {
-      localStorage.removeItem(STORAGE_KEY)
+      localStorage.removeItem(STORAGE_KEY);
     }
-  }
+  };
 
   const fetchUser = async () => {
-    set({ loading: true, error: null })
+    set({ loading: true, error: null });
     try {
-      const res = await api.get("/auth/me") // token auto-injected
-      set({ user: res.data })
+      const res = await api.get("/auth/me"); // token auto-injected
+      set({ user: res.data });
     } catch (e: any) {
-      set({ error: e?.message || "Failed to fetch user" })
+      set({ error: e?.message || "Failed to fetch user" });
       if (e?.response?.status === 401) {
-        get().logout()
+        get().logout();
       }
     } finally {
-      set({ loading: false })
+      set({ loading: false });
     }
-  }
+  };
 
   return {
     user: null,
@@ -75,11 +75,11 @@ const useAuthStore = create<AuthState>((set, get) => {
     setLoading,
     logout,
     fetchUser,
-  }
-})
+  };
+});
 
 export function getAuthToken() {
-  return useAuthStore.getState().accessToken
+  return useAuthStore.getState().accessToken;
 }
 
-export default useAuthStore
+export default useAuthStore;

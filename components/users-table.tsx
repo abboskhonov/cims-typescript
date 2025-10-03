@@ -88,7 +88,7 @@ export function UsersTable() {
     error: permissionsError,
     updatePermissions,
     isUpdating,
-  } = usePermissions(selectedUser?.id);
+  } = usePermissions(selectedUser?.id ?? "");
 
   React.useEffect(() => {
     fetchDashboard();
@@ -96,8 +96,12 @@ export function UsersTable() {
 
   // Update local permissions state when data changes
   React.useEffect(() => {
-    if (permissions?.permissions) {
-      setPermissionsData(permissions.permissions);
+    if (permissions) {
+      const perms = permissions.reduce((acc, p) => {
+        acc[p.name] = p.granted;
+        return acc;
+      }, {} as { [key: string]: boolean });
+      setPermissionsData(perms);
     }
   }, [permissions]);
 
@@ -135,7 +139,7 @@ export function UsersTable() {
       const keys = permissionKey.split(".");
       let temp: Record<string, unknown> = newPerms;
       for (let i = 0; i < keys.length - 1; i++) {
-        temp = temp[keys[i]];
+        temp = temp[keys[i]] as Record<string, unknown>;
       }
       temp[keys[keys.length - 1]] = !temp[keys[keys.length - 1]];
       return newPerms;
@@ -143,8 +147,11 @@ export function UsersTable() {
   };
 
   const handleSavePermissions = async () => {
+    const permissionsToUpdate = Object.entries(permissionsData).map(
+      ([name, granted]) => ({ name, granted })
+    );
     try {
-      await updatePermissions(permissionsData);
+      await updatePermissions(permissionsToUpdate as any);
       toast.success("Permissions updated successfully");
       setOpen(false);
     } catch (err) {

@@ -40,13 +40,13 @@ export function PermissionGuard({ required, children }: Props) {
 
         for (const part of parts) {
           if (current && typeof current === "object" && part in current) {
-            current = current[part];
+            current = current[part] as Record<string, unknown>;
           } else {
             return false;
           }
         }
 
-        return current === true;
+        return current as unknown as boolean;
       }
 
       // Handle simple permission (e.g., "crm")

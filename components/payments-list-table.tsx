@@ -30,12 +30,15 @@ const PaymentList = () => {
     isError,
     error,
     refetch,
+    updatePayment,
     deletePayment,
     togglePayment,
-    updatePayment,
+    isUpdating,
     isDeleting,
     isToggling,
-    isUpdating,
+    updateError,
+    deleteError,
+    toggleError,
   } = usePayments();
 
   const formatDate = (dateString: string) => {
@@ -100,7 +103,9 @@ const PaymentList = () => {
         <h2 className="text-2xl font-bold text-foreground mb-6">Payments</h2>
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-          <span className="ml-2 text-muted-foreground">Loading payments...</span>
+          <span className="ml-2 text-muted-foreground">
+            Loading payments...
+          </span>
         </div>
       </div>
     );
@@ -118,7 +123,7 @@ const PaymentList = () => {
             </p>
           </div>
           <Button
-            onClick={refetch}
+            onClick={() => refetch()}
             variant="outline"
             className="flex items-center space-x-2"
           >
@@ -137,7 +142,7 @@ const PaymentList = () => {
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-bold text-foreground">Payments</h2>
           <Button
-            onClick={refetch}
+            onClick={() => refetch()}
             variant="outline"
             size="sm"
             className="flex items-center space-x-2"
@@ -152,16 +157,28 @@ const PaymentList = () => {
           {/* Header */}
           <div className="grid grid-cols-7 gap-4 p-4 bg-muted border-b border-border">
             <div className="text-sm font-medium text-muted-foreground">ID</div>
-            <div className="text-sm font-medium text-muted-foreground">Project</div>
-            <div className="text-sm font-medium text-muted-foreground">Date</div>
-            <div className="text-sm font-medium text-muted-foreground">Summ</div>
-            <div className="text-sm font-medium text-muted-foreground">Payment</div>
-            <div className="text-sm font-medium text-muted-foreground">Toggle</div>
-            <div className="text-sm font-medium text-muted-foreground">Actions</div>
+            <div className="text-sm font-medium text-muted-foreground">
+              Project
+            </div>
+            <div className="text-sm font-medium text-muted-foreground">
+              Date
+            </div>
+            <div className="text-sm font-medium text-muted-foreground">
+              Summ
+            </div>
+            <div className="text-sm font-medium text-muted-foreground">
+              Payment
+            </div>
+            <div className="text-sm font-medium text-muted-foreground">
+              Toggle
+            </div>
+            <div className="text-sm font-medium text-muted-foreground">
+              Actions
+            </div>
           </div>
 
           {/* Body */}
-          {payments.length === 0 ? (
+          {!payments || payments.length === 0 ? (
             <div className="p-8 text-center text-muted-foreground">
               No payments added yet
             </div>
@@ -173,7 +190,9 @@ const PaymentList = () => {
               >
                 <div className="text-sm text-foreground">#{payment.id}</div>
                 <div className="text-sm text-foreground">{payment.project}</div>
-                <div className="text-sm text-foreground">{formatDate(payment.date)}</div>
+                <div className="text-sm text-foreground">
+                  {formatDate(payment.date)}
+                </div>
                 <div className="text-sm text-foreground">
                   ${payment.summ?.toLocaleString() || "0"}
                 </div>
