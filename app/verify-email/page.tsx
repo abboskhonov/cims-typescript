@@ -1,9 +1,9 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { VerifyEmailForm } from "@/components/verify-email-form";
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState<string | null>(null);
 
@@ -23,5 +23,13 @@ export default function VerifyEmailPage() {
     <div className="flex justify-center items-center min-h-screen">
       <VerifyEmailForm email={email} />
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<div className="flex justify-center items-center min-h-screen">Loading...</div>}>
+      <VerifyEmailContent />
+    </Suspense>
   );
 }
