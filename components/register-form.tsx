@@ -53,8 +53,15 @@ export default function RegisterForm() {
       if (data.access_token) setToken(data.access_token);
       if (data.user) setUser(data.user);
       router.push(`/verify-email?email=${encodeURIComponent(payload.email)}`);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || err.message || "Registration failed.");
+    } catch (err) {
+      let message = "Registration failed.";
+      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+        const data = err.response.data as { message?: string };
+        message = data.message || message;
+      } else if (err instanceof Error) {
+        message = err.message;
+      }
+      setError(message);
     } finally {
       setPending(false);
     }

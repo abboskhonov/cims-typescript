@@ -24,9 +24,11 @@ import { Loader2, Clock, Mail } from "lucide-react";
 export function VerifyEmailForm({ email }: { email: string }) {
   const router = useRouter();
   const [code, setCode] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [error, setError] = useState<string | null>(null);
 
   // Timer state - 30 minutes = 1800 seconds
   const [timeLeft, setTimeLeft] = useState(1800);
@@ -72,8 +74,14 @@ export function VerifyEmailForm({ email }: { email: string }) {
       toast.success("Email verified successfully!");
       localStorage.removeItem("unverifiedEmail");
       router.push("/login");
-    } catch (err: any) {
-      const msg = err.response?.data?.message || "Verification failed";
+    } catch (err) {
+      let msg = "Verification failed";
+      if (err instanceof Error) {
+        msg = err.message;
+      } else if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+        const data = err.response.data as { message?: string };
+        msg = data.message || msg;
+      }
       setError(msg);
       toast.error(msg);
     } finally {
@@ -91,8 +99,14 @@ export function VerifyEmailForm({ email }: { email: string }) {
       setIsExpired(false);
       setCode(""); // Clear current code
       toast.success("Verification code sent!");
-    } catch (err: any) {
-      const msg = err.response?.data?.message || "Failed to resend code";
+    } catch (err) {
+      let msg = "Failed to resend code";
+      if (err instanceof Error) {
+        msg = err.message;
+      } else if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+        const data = err.response.data as { message?: string };
+        msg = data.message || msg;
+      }
       setError(msg);
       toast.error(msg);
     } finally {
@@ -195,7 +209,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
             {/* Help Text */}
             <div className="text-center space-y-2">
               <p className="text-sm text-muted-foreground">
-                Didn't receive the code? Check your spam folder.
+                Didn&apos;t receive the code? Check your spam folder.
               </p>
               {!isExpired && (
                 <Button

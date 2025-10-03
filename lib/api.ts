@@ -1,9 +1,9 @@
 import axios from "axios";
 import useAuthStore, { getAuthToken } from "@/stores/useAuthStore";
 
-interface RetryableRequest extends Record<string, any> {
+interface RetryableRequest {
   _retry?: boolean;
-  headers?: Record<string, any>;
+  headers?: Record<string, string>;
 }
 
 const api = axios.create({
@@ -53,7 +53,7 @@ api.interceptors.response.use(
           original.headers.Authorization = `Bearer ${newToken}`;
         }
         return original ? api(original) : Promise.reject(err);
-      } catch (_) {
+      } catch {
         useAuthStore.getState().logout();
         // optionally: redirect to login here
       }

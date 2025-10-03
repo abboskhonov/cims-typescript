@@ -59,7 +59,7 @@ const AddPaymentForm = () => {
       setAmount("");
 
       toast.success("Payment added successfully");
-    } catch (error) {
+    } catch {
       toast.error("Failed to create payment. Please try again.");
     }
   };

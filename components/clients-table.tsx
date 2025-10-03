@@ -51,20 +51,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-// ✅ Unified Client interface (frontend model)
-export interface Client {
-  id: string
-  full_name: string
-  platform: string
-  phone_number: string
-  status?: string
-  assistant_name?: string
-  notes?: string
-  created_at?: string
-  updated_at?: string
-}
+import { Client } from "@/services/clientServices"
 
 // Frontend → Backend mapping
+/*
 const mapToBackend = (client: Partial<Client>): Partial<any> => {
   const backend: any = {}
   if (client.full_name) backend.full_name = client.full_name
@@ -75,6 +65,7 @@ const mapToBackend = (client: Partial<Client>): Partial<any> => {
   if (client.notes) backend.notes = client.notes
   return backend
 }
+*/
 
 // Status options
 const STATUS_OPTIONS = [
@@ -185,8 +176,12 @@ export function ClientsTable() {
       toast.success("Client deleted successfully")
       setOpen(false)
       setSelectedClient(null)
-    } catch (err: any) {
-      toast.error(err.message || "Failed to delete client")
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message || "Failed to delete client")
+      } else {
+        toast.error("An unknown error occurred while deleting client.")
+      }
     } finally {
       setLoadingDelete(false)
     }
@@ -214,6 +209,7 @@ export function ClientsTable() {
     try {
       const payload: Omit<Client, "id" | "created_at" | "updated_at"> = {
         full_name,
+        username: full_name.toLowerCase().replace(/\s+/g, "."),
         phone_number,
         platform,
         status,
@@ -225,8 +221,12 @@ export function ClientsTable() {
       toast.success("Client added successfully")
       setOpen(false)
       
-    } catch (err: any) {
-      toast.error(err.message || "Failed to add client")
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message || "Failed to add client")
+      } else {
+        toast.error("An unknown error occurred while adding client.")
+      }
     } finally {
       setIsSaving(false)
     }
@@ -252,8 +252,12 @@ export function ClientsTable() {
       toast.success("Client updated successfully")
       setOpen(false)
       setSelectedClient(null)
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update client")
+    } catch (err) {
+      if (err instanceof Error) {
+        toast.error(err.message || "Failed to update client")
+      } else {
+        toast.error("An unknown error occurred while updating client.")
+      }
     } finally {
       setIsSaving(false)
     }

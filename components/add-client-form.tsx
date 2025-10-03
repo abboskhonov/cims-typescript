@@ -151,7 +151,7 @@ export function AddClientFormSingleColumn() {
                 className="mt-1"
                 placeholder="Enter assistant name"
               />
-              <p className="text-xs text-gray-500 mt-1">Current value: "{formData.assistant_name}"</p>
+              <p className="text-xs text-gray-500 mt-1">Current value: &quot;{formData.assistant_name}&quot;</p>
             </div>
             <div>
               <Label htmlFor="notes" className="text-sm font-medium">Notes</Label>

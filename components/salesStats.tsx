@@ -5,7 +5,6 @@ import {
   Card,
   CardHeader,
   CardTitle,
-  CardContent,
   CardFooter,
   CardDescription,
   CardAction

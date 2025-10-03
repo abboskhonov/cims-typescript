@@ -50,10 +50,17 @@ import {
 } from "@/services/userServices";
 import { usePermissions } from "@/hooks/usePermissions";
 
-type Permission = {
+type User = {
   id: string;
   name: string;
-  granted: boolean;
+  surname: string;
+  email: string;
+  avatar?: string;
+  role: string;
+  company_code?: string;
+  telegram_id?: string;
+  default_salary?: number;
+  is_active: boolean;
 };
 
 export function UsersTable() {
@@ -65,7 +72,7 @@ export function UsersTable() {
   const fetchDashboard = useDashboardStore((s) => s.fetchDashboard);
   const updateUserInStore = useDashboardStore((s) => s.updateUserInStore);
 
-  const [selectedUser, setSelectedUser] = React.useState<any>(null);
+  const [selectedUser, setSelectedUser] = React.useState<User | null>(null);
   const [open, setOpen] = React.useState(false);
   const [dialogMode, setDialogMode] = React.useState<
     "edit" | "delete" | "add" | "permissions"
@@ -102,29 +109,35 @@ export function UsersTable() {
     setOpen(true);
   };
 
-  const handleEditUser = (user: any) => {
+  const handleEditUser = (user: User) => {
     setSelectedUser(user);
     setDialogMode("edit");
     setOpen(true);
   };
 
-  const handleDeleteUser = (user: any) => {
+  const handleDeleteUser = (user: User) => {
     setSelectedUser(user);
     setDialogMode("delete");
     setOpen(true);
   };
 
-  const handleManagePermissions = (user: any) => {
+  const handleManagePermissions = (user: User) => {
     setSelectedUser(user);
     setDialogMode("permissions");
     setOpen(true);
   };
 
   const handlePermissionToggle = (permissionKey: string) => {
-    setPermissionsData((prev) => ({
-      ...prev,
-      [permissionKey]: !prev[permissionKey]
-    }));
+    setPermissionsData((prev) => {
+      const newPerms = { ...prev };
+      const keys = permissionKey.split('.');
+      let temp: Record<string, unknown> = newPerms;
+      for (let i = 0; i < keys.length - 1; i++) {
+        temp = temp[keys[i]];
+      }
+      temp[keys[keys.length - 1]] = !temp[keys[keys.length - 1]];
+      return newPerms;
+    });
   };
 
   const handleSavePermissions = async () => {
@@ -132,10 +145,15 @@ export function UsersTable() {
       await updatePermissions(permissionsData);
       toast.success("Permissions updated successfully");
       setOpen(false);
-    } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message || "Failed to update permissions"
-      );
+    } catch (err) {
+      let message = "Failed to update permissions";
+      if (err instanceof Error) {
+        message = err.message;
+      } else if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+        const data = err.response.data as { message?: string };
+        message = data.message || message;
+      }
+      toast.error(message);
     }
   };
 
@@ -149,10 +167,15 @@ export function UsersTable() {
       await fetchDashboard(true); // Sync UI with server
       setOpen(false);
       setSelectedUser(null);
-    } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message || "Failed to delete user. Try again."
-      );
+    } catch (err) {
+      let message = "Failed to delete user. Try again.";
+       if (err instanceof Error) {
+        message = err.message;
+      } else if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+        const data = err.response.data as { message?: string };
+        message = data.message || message;
+      }
+      toast.error(message);
     } finally {
       setLoadingDelete(false);
     }
@@ -183,10 +206,15 @@ export function UsersTable() {
       toast.success("User added successfully");
       await fetchDashboard(true); // Refresh data from server
       setOpen(false);
-    } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message || "Failed to add user. Try again."
-      );
+    } catch (err) {
+      let message = "Failed to add user. Try again.";
+      if (err instanceof Error) {
+        message = err.message;
+      } else if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+        const data = err.response.data as { message?: string };
+        message = data.message || message;
+      }
+      toast.error(message);
     } finally {
       setIsSaving(false);
     }
@@ -290,7 +318,7 @@ export function UsersTable() {
                 </TableCell>
               </TableRow>
             ) : (
-              users.map((user: any, idx: number) => (
+              users.map((user, idx: number) => (
                 <TableRow
                   key={user.id || idx}
                   className="hover:bg-muted/50 border border-border text-foreground"
@@ -542,12 +570,17 @@ export function UsersTable() {
                     toast.success("User updated successfully");
                     setOpen(false);
                     setSelectedUser(null);
-                  } catch (err: any) {
+                  } catch (err) {
                     // Revert on error
                     await fetchDashboard(true);
-                    toast.error(
-                      err?.response?.data?.message || "Failed to update user"
-                    );
+                    let message = "Failed to update user";
+                    if (err instanceof Error) {
+                      message = err.message;
+                    } else if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+                      const data = err.response.data as { message?: string };
+                      message = data.message || message;
+                    }
+                    toast.error(message);
                   } finally {
                     setIsSaving(false);
                   }

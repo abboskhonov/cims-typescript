@@ -59,12 +59,13 @@ export function LoginForm({
       useAuthStore.getState().setToken(token);
 
       router.push("/dashboard");
-    } catch (err: any) {
+    } catch (err) {
       console.error("Login failed:", err);
-      const backendMessage =
-        err.response?.data?.message ||
-        err.response?.data?.detail ||
-        "Login failed. Please try again.";
+      let backendMessage = "Login failed. Please try again.";
+      if (err && typeof err === 'object' && 'response' in err && err.response && typeof err.response === 'object' && 'data' in err.response && err.response.data && typeof err.response.data === 'object') {
+        const data = err.response.data as { message?: string, detail?: string };
+        backendMessage = data.message || data.detail || backendMessage;
+      }
       setError(backendMessage);
     } finally {
       setIsLoading(false);
@@ -124,7 +125,6 @@ export function LoginForm({
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Signing in..." : "Login"}
                 </Button>
-                
               </div>
             </div>
 

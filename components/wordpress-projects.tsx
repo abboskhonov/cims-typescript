@@ -30,7 +30,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Toaster, toast } from "sonner";
-import { Plus, Trash2, Repeat } from "lucide-react";
+import { Plus, Repeat } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -103,8 +103,12 @@ export default function WordpressProjects() {
         toast.success("Project updated");
       }
       setOpen(false);
-    } catch (err: any) {
-      toast.error(err.message || "Action failed");
+    } catch (err) {
+      let message = "Action failed";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      toast.error(message);
     } finally {
       setLoadingAction(false);
     }
@@ -117,8 +121,12 @@ export default function WordpressProjects() {
       await deleteProject.mutateAsync(selectedProject.id);
       toast.success("Project deleted");
       setOpen(false);
-    } catch (err: any) {
-      toast.error(err.message || "Failed to delete");
+    } catch (err) {
+      let message = "Failed to delete";
+      if (err instanceof Error) {
+        message = err.message;
+      }
+      toast.error(message);
     } finally {
       setLoadingAction(false);
     }

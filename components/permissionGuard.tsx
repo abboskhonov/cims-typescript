@@ -1,5 +1,5 @@
 "use client"
-import React, { ReactNode, useEffect } from "react"
+import React, { ReactNode } from "react"
 import { useRouter } from "next/navigation"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -30,12 +30,12 @@ export function PermissionGuard({ required, children }: Props) {
 
 
   // Check if user has required permission(s)
-  const hasPermission = (permissions: Record<string, any>, required: string | string[]) => {
+  const hasPermission = (permissions: Record<string, unknown>, required: string | string[]) => {
     const checkSinglePermission = (perm: string): boolean => {
       // Handle dot notation (e.g., "crm.clients.view")
       if (perm.includes('.')) {
         const parts = perm.split('.')
-        let current = permissions
+        let current = permissions as Record<string, unknown>;
         
         for (const part of parts) {
           if (current && typeof current === 'object' && part in current) {
@@ -110,10 +110,10 @@ export function PermissionGuard({ required, children }: Props) {
             </div>
             
             <div className="space-y-3">
-              <h2 className="text-2xl font-bold text-foreground">   </h2>
+              <h2 className="text-2xl font-bold text-foreground">Access Denied</h2>
               <div className="space-y-1">
                 <p className="text-muted-foreground">
-                  You don't have the required permissions to view this page.
+                  You don&apos;t have the required permissions to view this page.
                 </p>
                 <p className="text-xs text-muted-foreground/80">
                   Required: <code className="bg-muted px-1.5 py-0.5 rounded text-xs">{requiredPerms}</code>
