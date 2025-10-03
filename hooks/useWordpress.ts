@@ -6,9 +6,10 @@ import api from "@/lib/api"
 
 export interface Project {
   id: number
-  title: string
+  name: string
   description: string
-  // add other fields from your API
+  url: string
+  is_active: boolean
 }
 
 export function useProjects() {

@@ -76,7 +76,12 @@ export default function WordpressProjects() {
 
   const handleEditClick = (project: Project) => {
     setSelectedProject(project);
-    setForm({ ...project });
+    setForm({
+      name: project.name,
+      url: "", // You might need to fetch this or have it in your project data
+      description: project.description,
+      is_active: true, // Assuming a default, adjust as needed
+    });
     setDialogMode("edit");
     setOpen(true);
   };
@@ -139,7 +144,7 @@ export default function WordpressProjects() {
       {/* Header */}
       <div className="mb-4 flex justify-between items-center">
         <h2 className="text-xl font-semibold">
-          Projects ({data?.projects.length || 0})
+          Projects ({data?.length || 0})
         </h2>
         <Button onClick={handleAddClick} className="flex items-center gap-2">
           <Plus size={16} /> Add Project
@@ -159,7 +164,7 @@ export default function WordpressProjects() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {!data?.projects.length ? (
+            {!data?.length ? (
               <TableRow>
                 <TableCell
                   colSpan={5}
@@ -169,7 +174,7 @@ export default function WordpressProjects() {
                 </TableCell>
               </TableRow>
             ) : (
-              data.projects.map((project) => (
+              data.map((project: Project) => (
                 <TableRow key={project.id} className="hover:bg-muted/50">
                   <TableCell>{project.name}</TableCell>
                   <TableCell>

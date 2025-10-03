@@ -217,7 +217,6 @@ export function UsersTable() {
       email: (formData.get("email") as string) || "",
       name: (formData.get("name") as string) || "",
       surname: (formData.get("surname") as string) || "",
-      password: (formData.get("password") as string) || "",
       role: (formData.get("role") as string) || "",
       company_code: (formData.get("company_code") as string) || undefined,
       telegram_id: (formData.get("telegram_id") as string) || undefined,
@@ -281,7 +280,11 @@ export function UsersTable() {
                 Error loading users
               </div>
               <p className="text-sm text-muted-foreground">{error}</p>
-              <Button variant="outline" size="sm" onClick={fetchDashboard}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fetchDashboard()}
+              >
                 Try Again
               </Button>
             </div>
